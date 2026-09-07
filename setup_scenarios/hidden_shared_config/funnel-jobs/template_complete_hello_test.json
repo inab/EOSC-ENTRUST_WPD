@@ -1,0 +1,122 @@
+{
+    "name": "WfExS TES template HELLO WORLD complete",
+    "description": "Complete TES template for executing hello world.",
+    "inputs": [
+     {
+        "name": "__workflow__",
+        "description": "Workflow Run RO-Crate workflow snapshot (with pre-configured datasets)",
+        "url":"file:///data/entrust/FILE_SCHEME/rocrate-hello_test.zip", 
+        "path": "/container/wrroc.zip"
+     },
+     {
+        "name": "input:an_input",
+        "url": "file:///data/entrust/FILE_SCHEME/hello_sample_input.txt",
+        "path": "/data/input_hello"
+     }
+    ],
+    "outputs": [
+     {
+        "name": "outputs",
+        "description": "The WRROC and outputs dir",
+        "path": "/outputs",
+        "url": "file:///data/entrust/FILE_SCHEME/EXPORT_HELLO",
+        "type": "DIRECTORY"
+     }
+    ],
+    "volumes": [
+        "/shared/"
+    ], 
+    "executors": [
+     {
+         "image": "ubuntu:24.04",
+         "command": [
+            "/bin/bash",
+            "-c",
+            "echo 'params:' > /shared/config.wfex.stage && echo '  an_input:' >> /shared/config.wfex.stage && echo '    c-l-a-s-s: File' >> /shared/config.wfex.stage && echo '    preferred-name: input.hello' >> /shared/config.wfex.stage && echo '    url: file:///data/input_hello' >> /shared/config.wfex.stage "
+         ],
+         "workdir": "/shared",
+         "stdout": "/outputs/prepare_params_stdout.log",
+         "stderr": "/outputs/prepare_params_stderr.log",
+         "ignore_error": false
+     },
+     {
+      "image": "ubuntu:24.04",
+      "command": [
+         "cat",
+         "/shared/config.wfex.stage"
+      ],
+      "workdir": "/shared",
+      "stdout": "/outputs/prepare_params_stdout.log",
+      "stderr": "/outputs/prepare_params_stderr.log",
+      "ignore_error": false
+  },
+     {
+        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "command": [
+            "WfExS-backend",
+            "-d", "",
+            "import",
+            "-R","/container/wrroc.zip",
+            "-s",
+            "--strict-reproducibility",
+            "--reproducibility-level","3",
+            "-W", "/shared/config.wfex.stage",
+            "--save-workdir-id",
+            "/shared/workdir_id_stage.txt"
+        ],
+        "workdir": "/shared",
+        "stdout": "/outputs/import_stdout.log",
+        "stderr": "/outputs/import_stderr.log",
+        "ignore_error": false
+     },
+     {
+        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "command": [
+            "WfExS-backend",
+            "staged-workdir",
+            "offline-exec",
+            "/shared/workdir_id_stage.txt"
+        ],
+        "workdir": "/shared",
+        "stdout": "/outputs/exec_stdout.log",
+        "stderr": "/outputs/exec_stderr.log",
+        "ignore_error": false
+     },
+     {
+        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "command": [
+            "WfExS-backend",
+            "staged-workdir",
+            "--workflow",
+            "--containers", 
+            "create-prov-crate",
+            "/shared/workdir_id_stage.txt",
+            "/outputs/hello_test_wrroc.zip"
+        ],
+        "workdir": "/shared",
+        "stdout": "/outputs/prov_crate_stdout.log",
+        "stderr": "/outputs/prov_crate_stderr.log",
+        "ignore_error": false
+     },
+     {
+         "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+         "command": [
+         "WfExS-backend",
+         "staged-workdir",
+         "shell",
+         "/shared/workdir_id_stage.txt",
+         "--",
+         "cp", "-dpLr", "outputs", "/outputs/analysis_outputs"
+         ],
+         "workdir": "/shared",
+         "stdout": "/outputs/outputs_cp_stdout.log",
+         "stderr": "/outputs/outputs_cp_stderr.log",
+         "ignore_error": false
+     }
+    ],
+    "tags": 
+     {
+        "Project": "EoscEntrustDemo",
+        "tres": "Nottingham TRE 02|BSC"
+     }
+}

@@ -1,0 +1,36 @@
+GenericS3:
+  - Disabled: false
+    Endpoint: "THE_S3_STORE_IP:THE_S3_STORE_PORT"
+    Key: "THE_S3_STORE_KEY"
+    Secret: "THE_S3_STORE_SECRET"
+
+LocalStorage:
+  # Whitelist of local directory paths which Funnel is allowed to access.
+  AllowedDirs:
+    - /data/entrust/FILE_SCHEME
+EventWriters:
+- log
+Compute: local
+Database: boltdb
+BoltDB:
+  Path: /data/funnel-work-dir/funnel.db
+Worker:
+  WorkDir: /data/funnel-work-dir
+#  PollingRate:
+#    seconds: 5
+#  LogUpdateRate:
+#    seconds: 5
+#  LogTailSize: 10000
+#  MaxParallelTransfers: 10
+  Container:
+    DriverCommand: singularity
+    RunCommand: exec --contain --cleanenv --fakeroot --no-umask --writable-tmpfs --add-caps SYS_ADMIN -B /dev/fuse -W /data/entrust/SING_dirs/scratch/ {{range $k, $v := .Env}}--env {{$k}}={{$v}} {{end}} {{if .Workdir}}--cwd {{.Workdir}}{{end}} {{range .Volumes}}--bind {{.HostPath}}:{{.ContainerPath}}:{{if .Readonly}}ro{{else}}rw{{end}} {{end}} docker://{{.Image}} {{.Command}}
+    PullCommand: exec --contain --no-umask --writable-tmpfs docker://{{.Image}} /bin/true
+    StopCommand: version
+#Logger:
+#  level: info
+#  formatter: text
+#  text_format:
+#    full_timestamp: true
+#    timestamp_format: 2006-01-02T15:04:05Z07:00
+
