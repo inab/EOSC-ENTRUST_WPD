@@ -11,6 +11,29 @@ We have deployed the TES service within a 12 CPU, 48GB of RAM VM, with two volum
 * The root one `/`, with 60GB. The home directory of the user running `funnel` will be there.
 * The data one `/data`, encrypted at the OpenStack level, with 500GB of raw storage. The volume has two subdirectories, one called `/data/entrust` and another one called `/data/funnel-work-dir`. The first one will be used to hold both the granted subdirectory for the allowed `file` scheme transfers (`/data/entrust/FILE_SCHEME`) needed by the demo, and the hidden cache and working directories **only needed** by WfExS (`/data/entrust/SING_dirs`) in the hidden shared scenario (explained below).
 
+```mermaid
+graph LR;
+  R["/"];
+  H["/home/user"];
+  F["/home/user/funnel"];
+  FC["/home/user/funnel-configs"];
+  FJ["/home/user/funnel-jobs"];
+  A["/data"];
+  B["/data/funnel-work-dir"];
+  C["/data/entrust"];
+  D["/data/entrust/FILE_SCHEME"];
+  E["`_/data/entrust/SING_dirs_`"];
+  R --> H;
+  H --> F;
+  H --> FC;
+  H --> FJ;
+  R --> A;
+  A --> B;
+  A --> C;
+  C --> D;
+  C --> E;
+```
+
 The VM has Ubuntu 24.04, updated, with Docker installed following [official instructions](https://docs.docker.com/engine/install/ubuntu/). As we are using a non standard MTU (in our case, 1442) within our cloud environment, we had to create the `/etc/docker/daemon.json` config file with the next content:
 
 ```json
