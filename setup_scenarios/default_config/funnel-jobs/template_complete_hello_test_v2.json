@@ -93,7 +93,7 @@
       "ignore_error": false
   },
      {
-        "image": "ghcr.io/inab/wfexs-backend:288-cache-aliasing-issues",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "env": {
             "XDG_CACHE_HOME": "/shared/WfExS/side_caches",
             "WFEXS_CONFIG_FILE": "/shared/WfExS/funnel_container_wfexs_restricted.yaml"
@@ -116,7 +116,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:288-cache-aliasing-issues",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "env": {
             "XDG_CACHE_HOME": "/shared/WfExS/side_caches",
             "WFEXS_CONFIG_FILE": "/shared/WfExS/funnel_container_wfexs_restricted.yaml"
@@ -133,7 +133,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:288-cache-aliasing-issues",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "env": {
             "XDG_CACHE_HOME": "/shared/WfExS/side_caches",
             "WFEXS_CONFIG_FILE": "/shared/WfExS/funnel_container_wfexs_restricted.yaml"
@@ -153,7 +153,7 @@
         "ignore_error": false
      },
      {
-         "image": "ghcr.io/inab/wfexs-backend:288-cache-aliasing-issues",
+         "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "env": {
             "XDG_CACHE_HOME": "/shared/WfExS/side_caches",
             "WFEXS_CONFIG_FILE": "/shared/WfExS/funnel_container_wfexs_restricted.yaml"

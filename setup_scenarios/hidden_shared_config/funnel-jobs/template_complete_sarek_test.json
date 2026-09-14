@@ -142,7 +142,7 @@
          "command": [
            "/bin/bash",
            "-c",
-           "echo 'params:' > config.wfex.stage && echo '  input:' >> config.wfex.stage && echo '    c-l-a-s-s: ContentWithURIs' >> config.wfex.stage && echo '    preferred-name: input.csv' >> config.wfex.stage && echo '    cacheable: false' >> config.wfexs.stage && echo '    url: file:///shared/tab_input.txt' >> config.wfex.stage && echo '    tabular:'  >> config.wfex.stage && echo '      uri-columns:'  >> config.wfex.stage && echo '        - 5'  >> config.wfex.stage && echo '        - 6'  >> config.wfex.stage && echo '      column-sep: \",\"'  >> config.wfex.stage && echo '      header-rows: 1'  >> config.wfex.stage"
+           "echo 'params:' > config.wfex.stage && echo '  input:' >> config.wfex.stage && echo '    c-l-a-s-s: ContentWithURIs' >> config.wfex.stage && echo '    preferred-name: input.csv' >> config.wfex.stage && echo '    clonable: false' >> config.wfex.stage && echo '    cacheable: false' >> config.wfexs.stage && echo '    url: file:///shared/tab_input.txt' >> config.wfex.stage && echo '    tabular:'  >> config.wfex.stage && echo '      uri-columns:'  >> config.wfex.stage && echo '        - 5'  >> config.wfex.stage && echo '        - 6'  >> config.wfex.stage && echo '      column-sep: \",\"'  >> config.wfex.stage && echo '      header-rows: 1'  >> config.wfex.stage"
          ],
          "workdir": "/shared",
          "stdout": "/outputs/prepare_params_stdout.log",
@@ -161,7 +161,7 @@
       "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "import",
@@ -179,7 +179,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "staged-workdir",
@@ -192,7 +192,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "staged-workdir",
@@ -208,7 +208,7 @@
         "ignore_error": false
      },
      {
-         "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+         "image": "ghcr.io/inab/wfexs-backend:1.0.10",
          "command": [
          "WfExS-backend",
          "staged-workdir",

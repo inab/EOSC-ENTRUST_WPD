@@ -51,7 +51,7 @@
       "ignore_error": false
   },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "-d", "",
@@ -70,7 +70,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "staged-workdir",
@@ -83,7 +83,7 @@
         "ignore_error": false
      },
      {
-        "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+        "image": "ghcr.io/inab/wfexs-backend:1.0.10",
         "command": [
             "WfExS-backend",
             "staged-workdir",
@@ -99,7 +99,7 @@
         "ignore_error": false
      },
      {
-         "image": "ghcr.io/inab/wfexs-backend:1.0.9",
+         "image": "ghcr.io/inab/wfexs-backend:1.0.10",
          "command": [
          "WfExS-backend",
          "staged-workdir",
