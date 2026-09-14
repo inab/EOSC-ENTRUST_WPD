@@ -137,11 +137,23 @@
 		"command": [
 			"/bin/bash",
 			"-c",
+			"mkdir /outputs/analysis_outputs /outputs/tes_logs"
+		],
+		"workdir": "/shared",
+		"stdout": "/outputs/mkdir_stdout.log",
+		"stderr": "/outputs/mkdir_stderr.log",
+		"ignore_error": false
+	},
+	{
+		"image": "ubuntu:24.04",
+		"command": [
+			"/bin/bash",
+			"-c",
 			"mkdir WfExS && cd WfExS && tar xf /container/wfexs_side_caches-snapshot.tar.gz && tar xf /container/wfexs_min_config.tar.gz && tar xf /container/wfexs_prepopulated_cache.tar.gz"
 		],
 		"workdir": "/shared",
-		"stdout": "/outputs/extract_layout_stdout.log",
-		"stderr": "/outputs/extract_layout_stderr.log",
+		"stdout": "/outputs/tes_logs/extract_layout_stdout.log",
+		"stderr": "/outputs/tes_logs/extract_layout_stderr.log",
 		"ignore_error": false
 	},
       {
@@ -152,8 +164,8 @@
            "echo 'patient,sex,status,sample,lane,fastq_1,fastq_2' > /shared/tab_input.txt ; echo \"$(</data/input_1_patient),$(</data/input_1_sex),$(</data/input_1_status),$(</data/input_1_sample),$(</data/input_1_lane),file:///data/input_1_fastq_1.fastq.gz,file:///data/input_1_fastq_2.fastq.gz\" >> /shared/tab_input.txt ; echo \"$(</data/input_2_patient),$(</data/input_2_sex),$(</data/input_2_status),$(</data/input_2_sample),$(</data/input_2_lane),file:///data/input_2_fastq_1.fastq.gz,file:///data/input_2_fastq_2.fastq.gz\" >> /shared/tab_input.txt"
          ],
          "workdir": "/shared",
-         "stdout": "/outputs/prepare_input_stdout.log",
-         "stderr": "/outputs/prepare_input_stderr.log",
+         "stdout": "/outputs/tes_logs/prepare_input_stdout.log",
+         "stderr": "/outputs/tes_logs/prepare_input_stderr.log",
          "ignore_error": false
        },
        {
@@ -163,8 +175,8 @@
             "/shared/tab_input.txt"
          ],
          "workdir": "/shared",
-         "stdout": "/outputs/cat_tab_input_stdout.log",
-         "stderr": "/outputs/cat_tab_input_stderr.log",
+         "stdout": "/outputs/tes_logs/cat_tab_input_stdout.log",
+         "stderr": "/outputs/tes_logs/cat_tab_input_stderr.log",
          "ignore_error": false
         },
         {
@@ -175,8 +187,8 @@
            "echo 'params:' > config.wfex.stage && echo '  input:' >> config.wfex.stage && echo '    c-l-a-s-s: ContentWithURIs' >> config.wfex.stage && echo '    preferred-name: input.csv' >> config.wfex.stage && echo '    clonable: false' >> config.wfex.stage && echo '    cacheable: false' >> config.wfexs.stage && echo '    url: file:///shared/tab_input.txt' >> config.wfex.stage && echo '    tabular:'  >> config.wfex.stage && echo '      uri-columns:'  >> config.wfex.stage && echo '        - 5'  >> config.wfex.stage && echo '        - 6'  >> config.wfex.stage && echo '      column-sep: \",\"'  >> config.wfex.stage && echo '      header-rows: 1'  >> config.wfex.stage"
          ],
          "workdir": "/shared",
-         "stdout": "/outputs/prepare_params_stdout.log",
-         "stderr": "/outputs/prepare_params_stderr.log",
+         "stdout": "/outputs/tes_logs/prepare_params_stdout.log",
+         "stderr": "/outputs/tes_logs/prepare_params_stderr.log",
          "ignore_error": false
        },
      {
@@ -186,8 +198,8 @@
          "/shared/config.wfex.stage"
       ],
       "workdir": "/shared",
-      "stdout": "/outputs/cat_params_stdout.log",
-      "stderr": "/outputs/cat_params_stderr.log",
+      "stdout": "/outputs/tes_logs/cat_params_stdout.log",
+      "stderr": "/outputs/tes_logs/cat_params_stderr.log",
       "ignore_error": false
      },
      {
@@ -208,8 +220,8 @@
             "/shared/workdir_id_stage.txt"
         ],
         "workdir": "/shared",
-        "stdout": "/outputs/import_stdout.log",
-        "stderr": "/outputs/import_stderr.log",
+        "stdout": "/outputs/tes_logs/import_stdout.log",
+        "stderr": "/outputs/tes_logs/import_stderr.log",
         "ignore_error": false
      },
      {
@@ -225,8 +237,8 @@
             "/shared/workdir_id_stage.txt"
         ],
         "workdir": "/shared",
-        "stdout": "/outputs/exec_stdout.log",
-        "stderr": "/outputs/exec_stderr.log",
+        "stdout": "/outputs/tes_logs/exec_stdout.log",
+        "stderr": "/outputs/tes_logs/exec_stderr.log",
         "ignore_error": false
      },
      {
@@ -245,8 +257,8 @@
             "/outputs/sarek_wrroc.zip"
         ],
         "workdir": "/shared",
-        "stdout": "/outputs/prov_crate_stdout.log",
-        "stderr": "/outputs/prov_crate_stderr.log",
+        "stdout": "/outputs/tes_logs/prov_crate_stdout.log",
+        "stderr": "/outputs/tes_logs/prov_crate_stderr.log",
         "ignore_error": false
      },
      {
@@ -261,11 +273,11 @@
          "shell",
          "/shared/workdir_id_stage.txt",
          "--",
-         "cp", "-dpLr", "outputs", "/outputs/analysis_outputs"
+         "cp", "-dpLr", "outputs/*", "meta/outputs/*/stats", "/outputs/analysis_outputs"
          ],
          "workdir": "/shared",
-         "stdout": "/outputs/outputs_cp_stdout.log",
-         "stderr": "/outputs/outputs_cp_stderr.log",
+         "stdout": "/outputs/tes_logs/outputs_cp_stdout.log",
+         "stderr": "/outputs/tes_logs/outputs_cp_stderr.log",
          "ignore_error": false
      }  
     ],
