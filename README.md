@@ -33,6 +33,26 @@ graph LR;
   C --> D;
   C --> E;
 ```
+When the examples based on an object store (like MinIO or RustFS) are used, next bucket layout is assumed:
+
+```mermaid
+graph LR;
+  R["/"];
+  W["archetype-workflows"];
+  O["funnel-outputs"];
+  I["sarek-inputs"];
+  M["makeit"];
+  C["wfexs-caches"];
+  R --> W;
+  R --> O;
+  R --> I;
+  R --> M;
+  R --> C;
+```
+* `archetype-workflows` bucket holds the WRROC for hello workflow and Sarek analysis. It can be read-only.
+* `sarek-inputs` and `makeit` buckets hold the inputs both for Sarek analysis and the hello workflow. It can be read-only.
+* `wfexs-caches` bucket holds pre-allocated caches needed both by the workflows and WfExS, assuming the TES service is running in an isolated environment. It can be read-only.
+* `funnel-outputs` bucket will hold all the results pushed by TES jobs, so it should be writable with the configured S3 credentials on funnel.
 
 The VM has Ubuntu 24.04, updated, with Docker installed following [official instructions](https://docs.docker.com/engine/install/ubuntu/). As we are using a non standard MTU (in our case, 1442) within our cloud environment, we had to create the `/etc/docker/daemon.json` config file with the next content:
 
@@ -91,6 +111,10 @@ All the needed contents are available online:
 This scenario is one of the most secured ones, but it requires to include as input both the workflow RO-Crate and each of the prepared WfExS cache and configuration archives.
 
 The used funnel configuration file is [funnel_wfexs-docker-privileged_v4_rw_cache.yaml](setup_scenarios/default_config/funnel-configs/funnel_wfexs-docker-privileged_v4_rw_cache.yaml) for a singularity within docker approach.
+
+We have TES examples based both on local files, as well as an object store:
+* **Hello workflow**: [local](setup_scenarios/default_config/funnel-jobs/template_complete_hello_test_v2.json) and [object store](setup_scenarios/default_config/funnel-jobs/template_complete_hello_test_v3.json).
+* **Sarek analysis**: [local](setup_scenarios/default_config/funnel-jobs/template_complete_sarek_test_v2.json) and [object store](setup_scenarios/default_config/funnel-jobs/template_complete_sarek_test_v3.json).
 
 ## Scenario: hidden shared WfExS cache directories within the TES service:
 
