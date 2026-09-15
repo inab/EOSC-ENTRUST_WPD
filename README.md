@@ -83,6 +83,8 @@ user_allow_other
 
 Then, we are going to download the latest funnel version in the branch v0.11 (we used [v0.11.14](https://github.com/calypr/funnel/releases/tag/v0.11.14)). Basically, we fetched https://github.com/calypr/funnel/releases/download/v0.11.14/funnel-linux-amd64-v0.11.14.tar.gz , we created a folder called `funnel` within the home of the user, and we extracted the contents of the fetched archive within that folder.
 
+The used WfExS-backend release was [version 1.0.10](https://github.com/inab/WfExS-backend/releases/tag/1.0.10) , as a [docker image](https://github.com/inab/WfExS-backend/pkgs/container/wfexs-backend/1220151481?tag=1.0.10) which is used by the TES jobs. Additionally, [Ubuntu 24.04 image](https://hub.docker.com/_/ubuntu) was needed for some pre and post execution tasks.
+
 Depending on the chosen scenario, the configuration file needed for funnel is going to change.
 
 ## Needed downloadable contents
