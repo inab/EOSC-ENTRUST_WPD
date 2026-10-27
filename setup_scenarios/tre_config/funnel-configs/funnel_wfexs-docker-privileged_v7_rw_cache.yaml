@@ -1,0 +1,34 @@
+GenericS3:
+  - Disabled: false
+    Endpoint: "192.168.0.163:9002"
+    Key: "kuSlFraVzBPhxf989PWY"
+    Secret: "4nx8k6xz2eosalPMoqoXlVHzdyFAdubmuTZo0VOy"
+
+LocalStorage:
+  # Whitelist of local directory paths which Funnel is allowed to access.
+  AllowedDirs:
+    - /data/entrust/FILE_SCHEME
+EventWriters:
+- log
+Compute: local
+Database: boltdb
+BoltDB:
+  Path: /data/funnel-work-dir/funnel.db
+Worker:
+  WorkDir: /data/funnel-work-dir
+  LeaveWorkDir: false
+#  PollingRate:
+#    seconds: 5
+#  LogUpdateRate:
+#    seconds: 5
+#  LogTailSize: 10000
+#  MaxParallelTransfers: 10
+  Container:
+    RunCommand: run --rm --privileged --device /dev/fuse {{range $k, $v := .Env}}{{if eq $k "TRE_WORKFLOW_DIR"}}-v {{$v}}:/workflows:rw {{else if eq $k "TRE_INPUT_DIR"}}-v {{$v}}:/inputs:ro {{end}}{{end}} {{range $k, $v := .Env}}{{if not (eq $k "TRE_WORKFLOW_DIR" "TRE_INPUT_DIR")}}--env {{$k}}={{$v}} {{end}}{{end}} {{if .Workdir}}--workdir {{.Workdir}}{{end}} {{range .Volumes}}-v {{.HostPath}}:{{.ContainerPath}}:{{if .Readonly}}ro{{else}}rw{{end}} {{end}} {{.Image}} {{.Command}}
+#Logger:
+#  level: info
+#  formatter: text
+#  text_format:
+#    full_timestamp: true
+#    timestamp_format: 2006-01-02T15:04:05Z07:00
+
