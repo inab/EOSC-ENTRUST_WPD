@@ -129,7 +129,7 @@ The TRE Agent must inject 4 environment variables through its DMN rules:
 
 Then, the used funnel configuration file [funnel_wfexs-docker-privileged_v7_rw_cache.yaml](setup_scenarios/tre_config/funnel-configs/funnel_wfexs-docker-privileged_v7_rw_cache.yaml) is treating both `TRE_WORKFLOW_DIR` and `TRE_INPUT_DIR` variables, binding those host directories to `/workflows` and `/inputs` within the docker instances launched by funnel.
 
-The dataset decryption happens Within the job steps which need to use the decrypted files. It is assumed the first step is placing the credentials in a file, in order to avoid overspilling them over the TES service logs. The step must perform something like:
+As you can see in the [TES message of this scenario](setup_scenarios/tre_config/funnel-jobs/template_complete_sarek_test_v4.json), the dataset decryption happens Within the job steps which need to use the decrypted files. It is assumed the first step is placing the credentials in a file, in order to avoid overspilling them over the TES service logs. The step must perform something like:
 
 ```bash
 gocryptfs -nosyslog -ro -q -extpass 'cat /shared/.parameters/.credentials' ${ENCRYPTED_PATH}" "${DECRYPTED_PATH}"
