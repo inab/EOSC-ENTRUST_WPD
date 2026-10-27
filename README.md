@@ -108,7 +108,76 @@ All the needed contents are available online:
   * [s3://ngi-igenomes/test-data/sarek/SRR7890918_WES_HCC1395-EA_tumor_1.fastq.gz](https://ngi-igenomes.s3.amazonaws.com/test-data/sarek/SRR7890918_WES_HCC1395-EA_tumor_1.fastq.gz)
   * [s3://ngi-igenomes/test-data/sarek/SRR7890918_WES_HCC1395-EA_tumor_2.fastq.gz](https://ngi-igenomes.s3.amazonaws.com/test-data/sarek/SRR7890918_WES_HCC1395-EA_tumor_2.fastq.gz)
 
-## Scenario: isolated TES service with no shared WfExS cache directories:
+## Scenario 1: 5s-TES TRE
+
+This scenario is the most secured one:
+
+```mermaid
+sequenceDiagram
+  User->>SubmissionFrontend: Agnostic TES message
+  SubmissionFrontend->>RabbitMQ: TES message
+  "TRE Agent"-->>RabbitMQ: any request?
+  RabbitMQ->>"TRE Agent": TES message
+  "TRE Agent"->>"TRE Funnel": Augmented TES message
+```
+
+The TRE Agent must inject 4 environment variables through its DMN rules:
+* `TRE_WORKFLOW_DIR`: The directory within the server where funnel is running, where all the usable analysis archetypes (sanctioned by the TRE operator) are available. This variable is used by the tweaked funnel configuration file, but it is not passed to the jobs.
+* `TRE_INPUT_DIR`: The directory where the possible input datasets are available. There should be a separate directory for each different dataset. Each subdirectory representing a dataset must be encrypted using [gocryptfs](https://github.com/rfjakob/gocryptfs). This variable is used by the tweaked funnel configuration file, but it is not passed to the jobs.
+* `TRE_INPUT_ID`: The identifier of the dataset to be used. It should be a relative route from `TRE_INPUT_DIR`.
+* `TRE_INPUT_CREDENTIALS`: The password to decrypt the dataset `TRE_INPUT_ID` (indeed, the directory `${TRE_INPUT_DIR}/${TRE_INPUT_ID}`).
+
+Then, the used funnel configuration file [funnel_wfexs-docker-privileged_v7_rw_cache.yaml](setup_scenarios/tre_config/funnel-configs/funnel_wfexs-docker-privileged_v7_rw_cache.yaml) is treating both `TRE_WORKFLOW_DIR` and `TRE_INPUT_DIR` variables, binding those host directories to `/workflows` and `/inputs` within the docker instances launched by funnel.
+
+The dataset decryption happens Within the job steps which need to use the decrypted files. It is assumed the first step is placing the credentials in a file, in order to avoid overspilling them over the TES service logs. The step must perform something like:
+
+```bash
+gocryptfs -nosyslog -ro -q -extpass 'cat /shared/.parameters/.credentials' ${ENCRYPTED_PATH}" "${DECRYPTED_PATH}"
+```
+
+The internal filesystem layout within the server where funnel lives is:
+
+```mermaid
+graph LR;
+  R["/"];
+  H["/home/user"];
+  F["/home/user/funnel"];
+  FC["/home/user/funnel-configs"];
+  A["/data"];
+  B["/data/funnel-work-dir"];
+  C["/data/entrust"];
+  L["/data/entrust/LOCAL"];
+  AA["/data/entrust/LOCAL/ANALYSIS_ARCHETYPEs"];
+  HW["/data/entrust/LOCAL/ANALYSIS_ARCHETYPEs/hello"];
+  SA["/data/entrust/LOCAL/ANALYSIS_ARCHETYPEs/sarek_variant_calling"];
+  ED["/data/entrust/LOCAL/ENCRYPTED_DATASETS"];
+  HCC1395["/data/entrust/LOCAL/ENCRYPTED_DATASETS/HCC1395"];
+  R --> H;
+  H --> F;
+  H --> FC;
+  R --> A;
+  A --> B;
+  A --> C;
+  C --> L;
+  L --> AA;
+  L --> ED;
+  AA --> HW;
+  AA --> SA;
+  ED --> HCC1395;
+```
+
+Each subdirectory within `ANALYSIS_ARCHETYPE` has next contents:
+
+* `funnel_tre_wfexs_restricted.yaml`: WfExS configuration file describing this analysis. This one is referred by the job itself, to build the content of `WFEXS_CONFIG_FILE` environment variable. The working directory within the file, under `workDir`, is hardcoded to `/shared/wfexs-backend-TRE-WORKDIR` (a path which must exist within the TES jobs).
+* `local_container_wfexs.yaml.key`: This one is referred by `funnel_tre_wfexs_restricted.yaml`.
+* `local_container_wfexs.yaml.pub`: This one is referred by `funnel_tre_wfexs_restricted.yaml`.
+* `wfexs-backend-container-cache`: This one is referred by `funnel_tre_wfexs_restricted.yaml`. Its contents come from `wfexs_prepopulated_cache.tar.gz` (whose link is available above). It contains the prepopulated public datasets needed by the analysis workflow. 
+* `side_caches`: This one is referred by the job itself to build the environment variable `XDG_CACHE_DIR`. WfExS caches there RO-Crate profile declarations, lists of words and lists of licences, used both to validate WRROCs, generate random job names and assess selected licences from SPDX short names.
+* `wrroc.zip`: The Workflow Run RO-Crate file which describes a previous execution of the analysis workflow. It contains default parameter values.
+
+Each subdirectory within `ENCRYPTED_DATASETS` is encrypted using gocryptfs.
+
+## Scenario 2: isolated TES service with no shared WfExS cache directories:
 
 This scenario is one of the most secured ones, but it requires to include as input both the workflow RO-Crate and each of the prepared WfExS cache and configuration archives.
 
@@ -118,7 +187,7 @@ We have TES examples based both on local files, as well as an object store:
 * **Hello workflow**: [local](setup_scenarios/default_config/funnel-jobs/template_complete_hello_test_v2.json) and [object store](setup_scenarios/default_config/funnel-jobs/template_complete_hello_test_v3.json).
 * **Sarek analysis**: [local](setup_scenarios/default_config/funnel-jobs/template_complete_sarek_test_v2.json) and [object store](setup_scenarios/default_config/funnel-jobs/template_complete_sarek_test_v3.json).
 
-## Scenario: hidden shared WfExS cache directories within the TES service:
+## Scenario 3: hidden shared WfExS cache directories within the TES service:
 
 This scenario internally hardcodes both the WfExS configuration files and cache directories, as well as the parent working directories.
 
