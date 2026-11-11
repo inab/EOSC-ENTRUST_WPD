@@ -1,8 +1,8 @@
 GenericS3:
   - Disabled: false
-    Endpoint: "192.168.0.163:9002"
-    Key: "kuSlFraVzBPhxf989PWY"
-    Secret: "4nx8k6xz2eosalPMoqoXlVHzdyFAdubmuTZo0VOy"
+    Endpoint: "THE_S3_STORE_IP:THE_S3_STORE_PORT"
+    Key: "THE_S3_STORE_KEY"
+    Secret: "THE_S3_STORE_SECRET"
 
 LocalStorage:
   # Whitelist of local directory paths which Funnel is allowed to access.
