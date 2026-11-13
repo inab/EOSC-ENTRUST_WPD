@@ -39,8 +39,8 @@
                 "export XDG_CACHE_HOME=\"/workflows/${__analysis__}/side_caches\" ; export WFEXS_CONFIG_FILE=\"/workflows/${__analysis__}/funnel_tre_wfexs_restricted.yaml\" ; export WRROC=\"/workflows/${__analysis__}/wrroc.zip\" ; export ENCRYPTED_PATH=\"/inputs/${TRE_INPUT_ID}\" ; export DECRYPTED_PATH=\"/shared/datasets/${TRE_INPUT_ID}\" ; export _input_1_fastq_1=\"${DECRYPTED_PATH}/$input_1_fastq_1\" ; export _input_1_fastq_2=\"${DECRYPTED_PATH}/$input_1_fastq_2\" ; export _input_2_fastq_1=\"${DECRYPTED_PATH}/$input_2_fastq_1\" ; export _input_2_fastq_2=\"${DECRYPTED_PATH}/$input_2_fastq_2\" ; mkdir -p /shared/tes_logs \"${DECRYPTED_PATH}\" /shared/.parameters ; chmod go+w /shared/tes_logs ; chmod ugo+rwxt /tmp ; echo \"$TRE_INPUT_CREDENTIALS\" > /shared/.parameters/.credentials  ; declare +x PWD OLDPWD HOME HOSTNAME PATH LS_COLORS SHLVL ; declare -x > /shared/.parameters/env"
             ],
             "workdir": "/shared",
-            "stdout": "/outputs/mkdir_stdout.log",
-            "stderr": "/outputs/mkdir_stderr.log",
+            "stdout": "/shared/mkdir_stdout.log",
+            "stderr": "/shared/mkdir_stderr.log",
             "ignore_error": false
         },
         {
