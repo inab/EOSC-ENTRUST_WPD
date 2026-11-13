@@ -115,15 +115,44 @@ This scenario is the most secured one:
 ```mermaid
 sequenceDiagram
   User->>SubmissionFrontend: Agnostic TES message
-  SubmissionFrontend->>RabbitMQ: TES message
+  SubmissionFrontend->>SubmissionBackend: TES message
+  SubmissionBackend-->>Submission Object Store: Create job output bucket
+  SubmissionBackend->>RabbitMQ: TES message + job details
   "TRE Agent"-->>RabbitMQ: any request?
   RabbitMQ->>"TRE Agent": TES message
+  "TRE Agent"-->>TRE Object Store: Create output bucket
+  TRE Object Store->>"TRE Agent": Created
   "TRE Agent"->>"TRE Funnel": Augmented TES message
+  "TRE Funnel"-->>Tasks from TES job: instantiates
+  Tasks from TES job-->>RO-Crate Validation service: Is this RO-Crate compliant with profile blah?
+  RO-Crate Validation service->>Tasks from TES job: Yes, it is
+  Tasks from TES job->>"TRE Funnel": tasks finished
+  "TRE Funnel"->>TRE Object Store: Store outputs
+  "TRE Funnel"-->>"TRE Agent": Job finished
+  "TRE Agent"-->>RabbitMQ: Report job finished and waiting to be egressed
+  SubmissionBackend-->>RabbitMQ: Did some job finish?
+  RabbitMQ->>SubmissionBackend: Yes, this
+  SubmissionBackend->>SubmissionFrontend: Yes, this
+  SubmissionFrontend->>User: Yes, job finished, waiting to be egressed
+  Egress-->>RabbitMQ: any egress job?
+  RabbitMQ->>Egress: Yes
+  Egress-->>TRE Operator: Job waiting to be egressed
+  TRE Operator->>Egress: Approve
+  Egress-->>TRE Object Store: Fetch objects to be egressed
+  TRE Object Store->>Egress: objects
+  Egress->>Submission Object Store: Push objects to job output bucket
+  Submission Object Store-->>Egress: Acknowledged
+  Egress->>RabbitMQ: Report outputs have been egressed
+  SubmissionBackend-->>RabbitMQ: Did some job egressed its results?
+  RabbitMQ->>SubmissionBackend: Yes
+  SubmissionBackend->>SubmissionFrontend: Yes
+  SubmissionFrontend->>User: Job finished and egressed
 ```
 
 The TRE Agent must inject 4 environment variables through its DMN rules:
 * `TRE_WORKFLOW_DIR`: The directory within the server where funnel is running, where all the usable analysis archetypes (sanctioned by the TRE operator) are available. This variable is used by the tweaked funnel configuration file, but it is not passed to the jobs.
 * `TRE_INPUT_DIR`: The directory where the possible input datasets are available. There should be a separate directory for each different dataset. Each subdirectory representing a dataset must be encrypted using [gocryptfs](https://github.com/rfjakob/gocryptfs). This variable is used by the tweaked funnel configuration file, but it is not passed to the jobs.
+* `TRE_VALIDATION_SERVICE`: The internal URL to be used to send the output WRROC metadata validation requests to the TRE deployed RO-Crate Validation Service.
 * `TRE_INPUT_ID`: The identifier of the dataset to be used. It should be a relative route from `TRE_INPUT_DIR`.
 * `TRE_INPUT_CREDENTIALS`: The password to decrypt the dataset `TRE_INPUT_ID` (indeed, the directory `${TRE_INPUT_DIR}/${TRE_INPUT_ID}`).
 
